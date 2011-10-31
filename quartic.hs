@@ -53,6 +53,8 @@ binomials =
 -- So it gets 3 coefficients for a depressed quartic polynom.
 solveDepressedPoly :: Floating a => [a] -> [a]
 solveDepressedPoly coefs
+    | null coefs = []
+    | head coefs == 0 = 0 : solveDepressedPoly (tail coefs)
     | degree == 4 = solveDepressedQuartic coefs
     | degree == 3 = solveDepressedCubic coefs
     | degree == 2 = solveDepressedQuadratic coefs
@@ -63,10 +65,10 @@ solveDepressedPoly coefs
 
 -- Based on http://en.wikipedia.org/wiki/Quartic_function#Quick_and_memorable_solution_from_first_principles
 solveDepressedQuartic :: Floating a => [a] -> [a]
-solveDepressedQuartic coefs =
-    sols (-d/p) ++ sols (d/p)
+solveDepressedQuartic coefs
+    | d == 0 = map sqrt $ solvePoly [e, c, 1]
+    | otherwise = solvePoly [c + p*p - d/p, 2*p, 2] ++ solvePoly [c + p*p + d/p, -2*p, 2]
     where
-        sols t = solvePoly [c + p*p + t, 2*p, 2]
         p = sqrt . head $ solvePoly [-d*d, c*c-4*e, 2*c, 1]
         [e, d, c] = coefs
 
@@ -75,11 +77,19 @@ solveDepressedQuartic coefs =
 -- Currently only provides one solution out of three.
 -- Providing the other two for Complex numbers would require using cis, or some typeclass providing 'primitive roots of unity'...
 solveDepressedCubic :: Floating a => [a] -> [a]
-solveDepressedCubic coefs =
-    [u - p/3/u]
+solveDepressedCubic coefs
+    | p == 0 = [cubicRoot (-q)]
+    | otherwise = [u - p/3/u]
     where
         [q, p] = coefs
-        u = (-q/2 - sqrt (q*q/4 + p*p*p/27))**(1/3)
+        u = cubicRoot $ -q/2 - sqrt (q*q/4 + p*p*p/27)
+
+-- (** (1/3)) doesn't work for Doubles.
+cubicRoot :: Floating a => a -> a
+cubicRoot x =
+    s * (s * x)**(1/3)
+    where
+        s = signum x
 
 solveDepressedQuadratic :: Floating a => [a] -> [a]
 solveDepressedQuadratic coefs =
