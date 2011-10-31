@@ -54,12 +54,10 @@ shiftedCoefs shift coefs =
 zipWithDefault :: a -> (a -> a -> b) -> [a] -> [a] -> [b]
 zipWithDefault _ _ [] [] = []
 zipWithDefault d f xs ys =
-    f (mhead xs) (mhead ys) : zipWithDefault d f (mtail xs) (mtail ys)
+    f (mhead xs) (mhead ys) : zipWithDefault d f (drop 1 xs) (drop 1 ys)
     where
         mhead [] = d
         mhead (x:_) = x
-        mtail [] = []
-        mtail (_:rest) = rest
 
 binomials :: Num a => [[a]]
 binomials =
