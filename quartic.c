@@ -5,8 +5,9 @@
 #include <math.h>
 
 #define MAX_DEGREE 4
+#define PI (3.141592653589793)
 
-int solve_poly(int degree, const double* poly, double* results);
+static double stableness_score(double a, double b);
 static int solve_normalized_poly(int degree, const double* poly, double* results);
 static void calc_shifted_coefs(double shift, int degree, const double* src, double* dst);
 static void calc_binomials(int num_binoms, int stride, double* dst);
@@ -26,6 +27,16 @@ int solve_poly(int degree, const double* poly, double* results) {
         return solve_poly(degree - 1, poly, results);
     if (degree > MAX_DEGREE)
         return -1;
+    if (degree > 2 && stableness_score(poly[degree], poly[degree - 1]) > stableness_score(poly[0], poly[1])) {
+        double rev_poly[MAX_DEGREE + 1];
+        int i;
+        for (i = 0; i <= degree; ++i)
+            rev_poly[i] = poly[degree - i];
+        const int num_results = solve_poly(degree, rev_poly, results);
+        for (i = 0; i < num_results; ++i)
+            results[i] = 1.0 / results[i];
+        return num_results;
+    }
     double normalized_poly[MAX_DEGREE + 1];
     int i;
     for (i = 0; i < degree; ++i)
@@ -34,13 +45,18 @@ int solve_poly(int degree, const double* poly, double* results) {
     return solve_normalized_poly(degree, normalized_poly, results);
 }
 
+static double stableness_score(double a, double b) {
+    const double t = fabs(a / b);
+    return t + 1.0 / t;
+}
+
 /* Normalized polynomials have the form of
  *   x^n + a*x^(n-1) + ..
  * The coefficient for x^n is one.
  * solve_normalized_poly does expect to get this coefficient despite it being known.
  */
 static int solve_normalized_poly(int degree, const double* poly, double* results) {
-    const double shift = -poly[degree - 1] / degree;
+    const double shift = -poly[degree - 1] / (double) degree;
     double shifted_coefs[MAX_DEGREE + 1];
     calc_shifted_coefs(shift, degree, poly, shifted_coefs);
     const int num_results = solve_depressed_poly(degree, shifted_coefs, results);
@@ -124,11 +140,14 @@ static int solve_depressed_quartic(const double* poly, double* results) {
         quadratic[0] = e;
         quadratic[1] = c;
         quadratic[2] = 1;
-        const int num_results = solve_poly(2, quadratic, results);
+        const int num_quad_results = solve_poly(2, quadratic, results);
         int i;
-        for (i = 0; i < num_results; ++i)
-            results[i] = sqrt(results[i]);
-        return num_results;
+        for (i = 0; i < num_quad_results; ++i) {
+            const double s = sqrt(results[i]);
+            results[2*i] = -s;
+            results[2*i + 1] = s;
+        }
+        return 2 * num_quad_results;
     }
     double helper_cubic[4];
     helper_cubic[0] = -d*d;
@@ -162,13 +181,13 @@ static int solve_depressed_cubic(const double* poly, double* results) {
     }
     const double t = q*q/4 + p*p*p/27;
     if (t >= 0.0) {
-        const double u = cubic_root(-q/2 - sqrt(t));
+        const double u = cubic_root(-q/2 + sqrt(t));
         results[0] = u - p/3.0/u;
         return 1;
     }
     const double s_real = -q/2;
     const double s_abs = sqrt(s_real*s_real - t);
-    const double s_phase = atan(sqrt(-t) / s_real);
+    const double s_phase = atan(sqrt(-t) / s_real) + (s_real >= 0 ? 0 : PI);
     const double u_abs = cubic_root(s_abs);
     const double u_phase = s_phase / 3.0;
     const double u_real = u_abs * cos(u_phase);

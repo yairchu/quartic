@@ -9,9 +9,20 @@ import Data.List (inits)
 solvePoly :: Floating a => [a] -> [a]
 solvePoly coefs
     | a == 0 = solvePoly $ init coefs
+    | stablenessScore coefs > stablenessScore revCoefs = map (1 /) $ solvePoly revCoefs
     | otherwise = solveNormalizedPoly . map (/ a) $ init coefs
     where
-        a = last coefs
+        revCoefs = reverse coefs
+        a = head revCoefs
+
+stablenessScore poly :: Fractional a => [a] -> [a]
+stablenessScore [] = 1
+stablenessScore [_] = 1
+stablenessScore xs =
+    t + 1 / t
+    where
+        (a : b : _) = reverse xs
+        t = abs $ a / b
 
 -- Normalized polynomials have the form of
 --   x^n + a*x^(n-1) + ..
@@ -66,11 +77,17 @@ solveDepressedPoly coefs
 -- Based on http://en.wikipedia.org/wiki/Quartic_function#Quick_and_memorable_solution_from_first_principles
 solveDepressedQuartic :: Floating a => [a] -> [a]
 solveDepressedQuartic coefs
-    | d == 0 = map sqrt $ solvePoly [e, c, 1]
+    | d == 0 = concatMap sqrts $ solvePoly [e, c, 1]
     | otherwise = solvePoly [c + p*p - d/p, 2*p, 2] ++ solvePoly [c + p*p + d/p, -2*p, 2]
     where
         p = sqrt . head $ solvePoly [-d*d, c*c-4*e, 2*c, 1]
         [e, d, c] = coefs
+
+sqrts :: Floating a => a -> [a]
+sqrts x =
+    [-s, s]
+    where
+        s = sqrt x
 
 -- Based on http://en.wikipedia.org/wiki/Cubic_equation#Cardano.27s_method
 --
@@ -82,17 +99,13 @@ solveDepressedCubic coefs
     | otherwise = [u - p/3/u]
     where
         [q, p] = coefs
-        u = cubicRoot $ -q/2 - sqrt (q*q/4 + p*p*p/27)
+        u = cubicRoot . head $ solvePoly [-p*p*p/27, q, 1]
 
 -- (** (1/3)) doesn't work for Doubles.
 cubicRoot :: Floating a => a -> a
-cubicRoot x =
-    s * (s * x)**(1/3)
-    where
-        s = signum x
+cubicRoot x
+    | signum x == -1 = -(-x)**(1/3)
+    | otherwise = x ** (1/3)
 
 solveDepressedQuadratic :: Floating a => [a] -> [a]
-solveDepressedQuadratic coefs =
-    [-t, t]
-    where
-        t = sqrt (- head coefs)
+solveDepressedQuadratic = sqrts . negate . head
