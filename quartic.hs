@@ -1,28 +1,37 @@
 -- Solve Polynomials of up to the fourth degree.
 -- Algorithms by Ferrari, Tartaglia, Cardano, et al. (16th century Italy)
 
-module Quartic (solvePoly) where
+module Quartic (solvePoly, stableSolvePoly) where
 
+import Data.Complex (Complex, magnitude)
 import Data.List (inits)
 
--- 'a' should be a type that supports 'sqrt (-1)'.
-solvePoly :: Floating a => [a] -> [a]
-solvePoly coefs
-    | a == 0 = solvePoly $ init coefs
+-- | Solve polynomial of floating-point coefficients.
+-- Will result in more accurate results than @solvePoly@.
+stableSolvePoly :: (RealFloat a, Ord a) => [Complex a] -> [Complex a]
+stableSolvePoly coefs
     | stablenessScore coefs > stablenessScore revCoefs = map (1 /) $ solvePoly revCoefs
-    | otherwise = solveNormalizedPoly . map (/ a) $ init coefs
+    | otherwise = solvePoly coefs
     where
         revCoefs = reverse coefs
-        a = head revCoefs
 
-stablenessScore poly :: Fractional a => [a] -> [a]
+stablenessScore :: RealFloat a => [Complex a] -> a
 stablenessScore [] = 1
 stablenessScore [_] = 1
 stablenessScore xs =
     t + 1 / t
     where
         (a : b : _) = reverse xs
-        t = abs $ a / b
+        t = magnitude $ a / b
+
+-- | Solve polynomial.
+-- @a@ should be a type that supports @sqrt (-1)@, i.e not @Double@ or @Float@.
+solvePoly :: Floating a => [a] -> [a]
+solvePoly coefs
+    | a == 0 = solvePoly $ init coefs
+    | otherwise = solveNormalizedPoly . map (/ a) $ init coefs
+    where
+        a = last coefs
 
 -- Normalized polynomials have the form of
 --   x^n + a*x^(n-1) + ..
@@ -95,17 +104,11 @@ sqrts x =
 -- Providing the other two for Complex numbers would require using cis, or some typeclass providing 'primitive roots of unity'...
 solveDepressedCubic :: Floating a => [a] -> [a]
 solveDepressedCubic coefs
-    | p == 0 = [cubicRoot (-q)]
+    | p == 0 = [(-q)**(1/3)]
     | otherwise = [u - p/3/u]
     where
         [q, p] = coefs
-        u = cubicRoot . head $ solvePoly [-p*p*p/27, q, 1]
-
--- (** (1/3)) doesn't work for Doubles.
-cubicRoot :: Floating a => a -> a
-cubicRoot x
-    | signum x == -1 = -(-x)**(1/3)
-    | otherwise = x ** (1/3)
+        u = head (solvePoly [-p*p*p/27, q, 1]) ** (1/3)
 
 solveDepressedQuadratic :: Floating a => [a] -> [a]
 solveDepressedQuadratic = sqrts . negate . head
