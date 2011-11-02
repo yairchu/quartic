@@ -9,7 +9,7 @@ Naturally, the Haskell implementation is shorter.
 
 # C implementation
 
-This implementation is specific to `double`s, that is, it works only for real numbers (not complex or other fields).
+This implementation is specific to `double`s, that is, it works only for real numbers (not complex or other fields) and only find real roots.
 
 # Haskell implementation
 
