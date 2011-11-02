@@ -28,6 +28,8 @@ stablenessScore xs =
 -- @a@ should be a type that supports @sqrt (-1)@, i.e not @Double@ or @Float@.
 solvePoly :: Floating a => [a] -> [a]
 solvePoly coefs
+    | null coefs = []
+    | head coefs == 0 = [0]
     | a == 0 = solvePoly $ init coefs
     | otherwise = solveNormalizedPoly . map (/ a) $ init coefs
     where
@@ -71,12 +73,11 @@ binomials =
 -- So it gets 3 coefficients for a depressed quartic polynom.
 solveDepressedPoly :: Floating a => [a] -> [a]
 solveDepressedPoly coefs
-    | null coefs = []
+    | null coefs = [0] -- degree == 1
     | head coefs == 0 = 0 : solveDepressedPoly (tail coefs)
     | degree == 4 = solveDepressedQuartic coefs
     | degree == 3 = solveDepressedCubic coefs
     | degree == 2 = solveDepressedQuadratic coefs
-    | degree == 1 = [0]
     | otherwise = error "unsupported polynomial degree"
     where
         degree = length coefs + 1

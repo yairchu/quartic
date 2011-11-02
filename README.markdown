@@ -1,4 +1,5 @@
 Solve Quartic equations (4th degree polynomials) in C and Haskell.
+
 License: BSD.
 
 (Also solves cubic, quadratic, and linear equations)
@@ -6,5 +7,18 @@ License: BSD.
 The two implementations are very close in their structure/design.
 Naturally, the Haskell implementation is shorter.
 
-The C implementation is specific to "double"s, that is, it works only for real numbers (not complex or other fields).
-The Haskell implementation is generic and should work for finite fields too (I think).
+# C implementation
+
+This implementation is specific to `double`s, that is, it works only for real numbers (not complex or other fields).
+
+# Haskell implementation
+
+This implementation is generic and should work for finite fields too (I think).
+
+## Note about Cubic equations
+
+The solving of cubic equations only finds one root.
+Finding all three roots for `Complex Double`s isn't hard but I wanted to keep the code generic.
+
+For that a type-class providing primitive roots of unity would be required.
+The class providing the primitive square root of unity, `(-1)`, exists in Haskell and it is `Num`, but here we would need a primitive cubic root of unity..
