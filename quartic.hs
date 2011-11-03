@@ -72,24 +72,20 @@ binomials =
 -- The coefficient for x^n is 1 and for x^(n-1) is zero.
 -- So it gets 3 coefficients for a depressed quartic polynom.
 solveDepressedPoly :: Floating a => [a] -> [a]
-solveDepressedPoly coefs
-    | null coefs = [0] -- degree == 1
-    | head coefs == 0 = 0 : solveDepressedPoly (tail coefs)
-    | degree == 4 = solveDepressedQuartic coefs
-    | degree == 3 = solveDepressedCubic coefs
-    | degree == 2 = solveDepressedQuadratic coefs
-    | otherwise = error "unsupported polynomial degree"
-    where
-        degree = length coefs + 1
+solveDepressedPoly (0 : xs) = 0 : solveDepressedPoly xs
+solveDepressedPoly [] = [0] -- Poly is: x + 0 = 0
+solveDepressedPoly [c0] = sqrts (-c0) -- Quadratic
+solveDepressedPoly [c0, c1] = solveDepressedCubic c0 c1
+solveDepressedPoly [c0, c1, c2] = solveDepressedQuartic c0 c1 c2
+solveDepressedPoly _ = error "unsupported polynomial degree"
 
 -- Based on http://en.wikipedia.org/wiki/Quartic_function#Quick_and_memorable_solution_from_first_principles
-solveDepressedQuartic :: Floating a => [a] -> [a]
-solveDepressedQuartic coefs
+solveDepressedQuartic :: Floating a => a -> a -> a -> [a]
+solveDepressedQuartic e d c
     | d == 0 = concatMap sqrts $ solvePoly [e, c, 1]
     | otherwise = solvePoly [c + p*p - d/p, 2*p, 2] ++ solvePoly [c + p*p + d/p, -2*p, 2]
     where
         p = sqrt . head $ solvePoly [-d*d, c*c-4*e, 2*c, 1]
-        [e, d, c] = coefs
 
 sqrts :: Floating a => a -> [a]
 sqrts x =
@@ -101,13 +97,9 @@ sqrts x =
 --
 -- Currently only provides one solution out of three.
 -- Providing the other two for Complex numbers would require using cis, or some typeclass providing 'primitive roots of unity'...
-solveDepressedCubic :: Floating a => [a] -> [a]
-solveDepressedCubic coefs
-    | p == 0 = [(-q)**(1/3)]
-    | otherwise = [u - p/3/u]
+solveDepressedCubic :: Floating a => a -> a -> [a]
+solveDepressedCubic q 0 = [(-q)**(1/3)]
+solveDepressedCubic q p =
+    [u - p/3/u]
     where
-        [q, p] = coefs
         u = head (solvePoly [-p*p*p/27, q, 1]) ** (1/3)
-
-solveDepressedQuadratic :: Floating a => [a] -> [a]
-solveDepressedQuadratic = sqrts . negate . head

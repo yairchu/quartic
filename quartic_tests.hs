@@ -13,8 +13,8 @@ checkPoly poly =
         checkRoots [] = all (== 0) poly
         checkRoots roots = all ((< 0.01) . magnitude . evaluatePoly poly) roots
 
-props_realQuadratic :: (Double, Double, Double) -> Bool
-props_realQuadratic (a, b, c) =
+props_realQuadratic :: Double -> Double -> Double -> Bool
+props_realQuadratic a b c =
     checkRoots $ solvePoly poly
     where
         poly = map toComplex [a, b, c]
@@ -34,7 +34,7 @@ evaluatePoly poly x = sum . zipWith (*) poly $ iterate (* x) 1
 main :: IO ()
 main = do
     quickCheck props_realQuadratic
-    quickCheck $ \(a, b) -> checkPoly [a, b]
-    quickCheck $ \(a, b, c) -> checkPoly [a, b, c]
-    quickCheck $ \(a, b, c, d) -> checkPoly [a, b, c, d]
-    quickCheck $ \(a, b, c, d, e) -> checkPoly [a, b, c, d, e]
+    quickCheck $ \a b -> checkPoly [a, b]
+    quickCheck $ \a b c -> checkPoly [a, b, c]
+    quickCheck $ \a b c d -> checkPoly [a, b, c, d]
+    quickCheck $ \a b c d e -> checkPoly [a, b, c, d, e]
