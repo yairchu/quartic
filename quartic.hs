@@ -81,9 +81,9 @@ solveDepressedPoly _ = error "unsupported polynomial degree"
 
 -- Based on http://en.wikipedia.org/wiki/Quartic_function#Quick_and_memorable_solution_from_first_principles
 solveDepressedQuartic :: Floating a => a -> a -> a -> [a]
-solveDepressedQuartic e d c
-    | d == 0 = concatMap sqrts $ solvePoly [e, c, 1]
-    | otherwise = solvePoly [c + p*p - d/p, 2*p, 2] ++ solvePoly [c + p*p + d/p, -2*p, 2]
+solveDepressedQuartic e 0 c = concatMap sqrts $ solvePoly [e, c, 1]
+solveDepressedQuartic e d c =
+    solvePoly [c + p*p - d/p, 2*p, 2] ++ solvePoly [c + p*p + d/p, -2*p, 2]
     where
         p = sqrt . head $ solvePoly [-d*d, c*c-4*e, 2*c, 1]
 
