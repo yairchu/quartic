@@ -1,4 +1,4 @@
-/* Solve Polynomials of up to the fourth degree.
+/* Solve Polynomials of up to the fourth degree. (over complex numbers)
  * Algorithms by Ferrari, Tartaglia, Cardano, et al. (16th century Italy)
  */
 

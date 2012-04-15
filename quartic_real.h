@@ -1,4 +1,4 @@
-/* Solve Polynomials of up to the fourth degree. (over complex numbers)
+/* Solve Polynomials of up to the fourth degree. (over real numbers)
  * Algorithms by Ferrari, Tartaglia, Cardano, et al. (16th century Italy)
  */
 
@@ -9,12 +9,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-typedef struct {
-    double real;
-    double imag;
-} complex_t;
-
-int solve_poly(int degree, const complex_t* poly, complex_t* results);
+int solve_real_poly(int degree, const double* poly, double* results);
 
 #ifdef __cplusplus
 } /* extern "C" */
