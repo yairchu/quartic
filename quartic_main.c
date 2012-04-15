@@ -11,16 +11,17 @@ int main(int argc, char** argv) {
             "\n");
         return -1;
     }
-    double poly[5];
-    poly[4] = atof(argv[1]);
-    poly[3] = atof(argv[2]);
-    poly[2] = atof(argv[3]);
-    poly[1] = atof(argv[4]);
-    poly[0] = atof(argv[5]);
-    double sols[4];
+    complex_t poly[5];
+    poly[0].imag = poly[1].imag = poly[2].imag = poly[3].imag = poly[4].imag = 0;
+    poly[4].real = atof(argv[1]);
+    poly[3].real = atof(argv[2]);
+    poly[2].real = atof(argv[3]);
+    poly[1].real = atof(argv[4]);
+    poly[0].real = atof(argv[5]);
+    complex_t sols[4];
     const int num_sols = solve_poly(4, poly, sols);
     int i;
     for (i = 0; i < num_sols; ++i)
-        printf("%f\n", sols[i]);
+        printf("%f + %fi\n", sols[i].real, sols[i].imag);
     return 0;
 }

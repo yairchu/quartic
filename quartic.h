@@ -5,7 +5,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
-int solve_poly(int degree, const double* poly, double* results);
+typedef struct {
+    double real;
+    double imag;
+} complex_t;
+
+int solve_poly(int degree, const complex_t* poly, complex_t* results);
 
 #ifdef __cplusplus
 } /* extern "C" */
