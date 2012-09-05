@@ -26,10 +26,10 @@ stablenessScore xs =
 
 -- | Solve polynomial.
 -- @a@ should be a type that supports @sqrt (-1)@, i.e not @Double@ or @Float@.
-solvePoly :: Floating a => [a] -> [a]
+solvePoly :: (Eq a, Floating a) => [a] -> [a]
+solvePoly [] = []
+solvePoly (0:_) = [0]
 solvePoly coefs
-    | null coefs = []
-    | head coefs == 0 = [0]
     | a == 0 = solvePoly $ init coefs
     | otherwise = solveNormalizedPoly . map (/ a) $ init coefs
     where
@@ -39,7 +39,7 @@ solvePoly coefs
 --   x^n + a*x^(n-1) + ..
 -- The coefficient for x^n is one.
 -- So it gets 4 coefficients for a normalized quartic polynom.
-solveNormalizedPoly :: Floating a => [a] -> [a]
+solveNormalizedPoly :: (Eq a, Floating a) => [a] -> [a]
 solveNormalizedPoly coefs =
     map (+ shift) . solveDepressedPoly . take (degree - 1) . shiftedCoefs shift $ coefs ++ [1]
     where
@@ -71,7 +71,7 @@ binomials =
 --   x^n + a*x^(n-2) + ..
 -- The coefficient for x^n is 1 and for x^(n-1) is zero.
 -- So it gets 3 coefficients for a depressed quartic polynom.
-solveDepressedPoly :: Floating a => [a] -> [a]
+solveDepressedPoly :: (Eq a, Floating a) => [a] -> [a]
 solveDepressedPoly (0 : xs) = 0 : solveDepressedPoly xs
 solveDepressedPoly [] = [0] -- Poly is: x + 0 = 0
 solveDepressedPoly [c0] = sqrts (-c0) -- Quadratic
@@ -80,7 +80,7 @@ solveDepressedPoly [c0, c1, c2] = solveDepressedQuartic c0 c1 c2
 solveDepressedPoly _ = error "unsupported polynomial degree"
 
 -- Based on http://en.wikipedia.org/wiki/Quartic_function#Quick_and_memorable_solution_from_first_principles
-solveDepressedQuartic :: Floating a => a -> a -> a -> [a]
+solveDepressedQuartic :: (Eq a, Floating a) => a -> a -> a -> [a]
 solveDepressedQuartic e 0 c = concatMap sqrts $ solvePoly [e, c, 1]
 solveDepressedQuartic e d c =
     solvePoly [c + p*p - d/p, 2*p, 2] ++ solvePoly [c + p*p + d/p, -2*p, 2]
@@ -97,7 +97,7 @@ sqrts x =
 --
 -- Currently only provides one solution out of three.
 -- Providing the other two for Complex numbers would require using cis, or some typeclass providing 'primitive roots of unity'...
-solveDepressedCubic :: Floating a => a -> a -> [a]
+solveDepressedCubic :: (Eq a, Floating a) => a -> a -> [a]
 solveDepressedCubic q 0 = [(-q)**(1/3)]
 solveDepressedCubic q p =
     [u - p/3/u]
