@@ -145,9 +145,10 @@ static int solve_depressed_quartic(const double* poly, double* results) {
         quadratic[0] = e;
         quadratic[1] = c;
         quadratic[2] = 1;
-        num_quad_results = solve_real_poly(2, quadratic, results);
+        double quadratic_results[2];
+        num_quad_results = solve_real_poly(2, quadratic, quadratic_results);
         for (i = 0; i < num_quad_results; ++i) {
-            const double s = sqrt(results[i]);
+            const double s = sqrt(quadratic_results[i]);
             results[2*i] = -s;
             results[2*i + 1] = s;
         }
