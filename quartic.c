@@ -155,10 +155,10 @@ static int solve_depressed_quartic(const complex_t* poly, complex_t* results) {
     if (complex_eq(d, complex_from_real(0.0))) {
 		int i, num_quad_results;
         complex_t quadratic[3];
+        complex_t quadratic_results[2];
         quadratic[0] = e;
         quadratic[1] = c;
         quadratic[2] = complex_from_real(1.0);
-        complex_t quadratic_results[2];
         num_quad_results = solve_poly(2, quadratic, quadratic_results);
         for (i = 0; i < num_quad_results; ++i) {
             const complex_t s = complex_sqrt(quadratic_results[i]);
