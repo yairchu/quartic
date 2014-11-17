@@ -277,7 +277,8 @@ static complex_t complex_sqrt(complex_t x) {
     const double r = sqrt(complex_sqr_norm(x));
     complex_t result;
     result.real = sqrt(0.5 * (r + x.real));
-    result.imag = sqrt(0.5 * (r - x.real));
+    const double t = sqrt(0.5 * (r - x.real));
+    result.imag = x.imag >= 0 ? t : -t;
     return result;
 }
 
