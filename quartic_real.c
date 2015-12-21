@@ -5,7 +5,6 @@
 #include <math.h>
 
 #define MAX_DEGREE 4
-#define PI (3.141592653589793)
 
 static double stableness_score(double a, double b);
 static int solve_normalized_poly(int degree, const double* poly, double* results);
@@ -190,7 +189,7 @@ static int solve_depressed_cubic(const double* poly, double* results) {
     }
     s_real = -q/2;
     s_abs = sqrt(s_real*s_real - t);
-    s_phase = atan(sqrt(-t) / s_real) + (s_real >= 0 ? 0 : PI);
+    s_phase = atan(sqrt(-t) / s_real) + (s_real >= 0 ? 0 : M_PI);
     u_abs = cubic_root(s_abs);
     u_phase = s_phase / 3.0;
     u_real = u_abs * cos(u_phase);
