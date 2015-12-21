@@ -7,7 +7,6 @@
 #include "quartic.h"
 
 #define MAX_DEGREE 4
-#define PI (3.141592653589793)
 
 static double stableness_score(complex_t a, complex_t b);
 static int solve_normalized_poly(int degree, const complex_t* poly, complex_t* results);
