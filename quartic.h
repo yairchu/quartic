@@ -2,8 +2,8 @@
  * Algorithms by Ferrari, Tartaglia, Cardano, et al. (16th century Italy)
  */
 
-#ifndef __QUARTIC_H__
-#define __QUARTIC_H__
+#ifndef QUARTIC_H
+#define QUARTIC_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,4 +20,4 @@ int solve_poly(int degree, const complex_t* poly, complex_t* results);
 } /* extern "C" */
 #endif /* __cplusplus */
 
-#endif /* __QUARTIC_H__ */
+#endif /* QUARTIC_H */

@@ -2,6 +2,8 @@
  * Algorithms by Ferrari, Tartaglia, Cardano, et al. (16th century Italy)
  */
 
+#include "quartic_real.h"
+
 #include <math.h>
 
 #define MAX_DEGREE 4
@@ -30,7 +32,7 @@ int solve_real_poly(int degree, const double* poly, double* results) {
         return -1;
     if (degree > 2 && stableness_score(poly[degree], poly[degree - 1]) > stableness_score(poly[0], poly[1])) {
         double rev_poly[MAX_DEGREE + 1];
-        int i, num_results;
+        int num_results;
         for (i = 0; i <= degree; ++i)
             rev_poly[i] = poly[degree - i];
         num_results = solve_real_poly(degree, rev_poly, results);
