@@ -38,6 +38,8 @@ int solve_poly(int degree, const complex_t* poly, complex_t* results) {
     complex_t normalized_poly[MAX_DEGREE + 1];
     int i;
     const complex_t a = poly[degree];
+    if (degree == 0)
+        return 0;
     if (complex_eq(a, complex_from_real(0.0)))
         return solve_poly(degree - 1, poly, results);
     if (degree > MAX_DEGREE)

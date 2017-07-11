@@ -27,6 +27,8 @@ int solve_real_poly(int degree, const double* poly, double* results) {
     double normalized_poly[MAX_DEGREE + 1];
     int i;
     const double a = poly[degree];
+    if (degree == 0)
+        return 0;
     if (a == 0)
         return solve_real_poly(degree - 1, poly, results);
     if (degree > MAX_DEGREE)
