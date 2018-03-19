@@ -1,0 +1,6 @@
+/tags
+/quartic
+/quartic_real
+/quartic_tests
+*.o
+*.hi
