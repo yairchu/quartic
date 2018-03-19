@@ -3,8 +3,26 @@
 
 #include "quartic.h"
 
-int main(int argc, char** argv) {
-    if (argc != 6) {
+complex_t parse_complex(char* str)
+{
+    complex_t result;
+    char* comp_end = str;
+    double comp = strtod(str, &comp_end);
+    if (comp_end[0] == 'i')
+    {
+        result.real = 0.0;
+        result.imag = comp;
+        return result;
+    }
+    result.real = comp;
+    result.imag = strtod(comp_end, NULL);
+    return result;
+}
+
+int main(int argc, char** argv)
+{
+    if (argc != 6)
+    {
         printf(
             "To solve: a*x^4 + b*x^3 + c*x^2 + d*x + e\n"
             "Use: quartic <a> <b> <c> <d> <e>\n"
@@ -12,12 +30,11 @@ int main(int argc, char** argv) {
         return -1;
     }
     complex_t poly[5];
-    poly[0].imag = poly[1].imag = poly[2].imag = poly[3].imag = poly[4].imag = 0;
-    poly[4].real = atof(argv[1]);
-    poly[3].real = atof(argv[2]);
-    poly[2].real = atof(argv[3]);
-    poly[1].real = atof(argv[4]);
-    poly[0].real = atof(argv[5]);
+    poly[4] = parse_complex(argv[1]);
+    poly[3] = parse_complex(argv[2]);
+    poly[2] = parse_complex(argv[3]);
+    poly[1] = parse_complex(argv[4]);
+    poly[0] = parse_complex(argv[5]);
     complex_t sols[4];
     const int num_sols = solve_poly(4, poly, sols);
     int i;
