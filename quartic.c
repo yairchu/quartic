@@ -73,7 +73,7 @@ static double stableness_score(complex_t a, complex_t b) {
 static int solve_normalized_poly(int degree, const complex_t* poly, complex_t* results) {
     const complex_t shift = complex_mult_real(-1.0 / (double) degree, poly[degree - 1]);
     complex_t shifted_coefs[MAX_DEGREE + 1];
-	int i, num_results;
+    int i, num_results;
     calc_shifted_coefs(shift, degree, poly, shifted_coefs);
     num_results = solve_depressed_poly(degree, shifted_coefs, results);
     for (i = 0; i < num_results; ++i)
@@ -149,13 +149,13 @@ static int solve_depressed_quartic(const complex_t* poly, complex_t* results) {
     complex_t helper_cubic[4];
     complex_t helper_results[3];
     complex_t quadratic_factor[3];
-	complex_t p, c_plus_p_sqr, d_div_p;
+    complex_t p, c_plus_p_sqr, d_div_p;
     const complex_t e = poly[0];
     const complex_t d = poly[1];
     const complex_t c = poly[2];
-	int num_results;
+    int num_results;
     if (complex_eq(d, complex_from_real(0.0))) {
-		int i, num_quad_results;
+        int i, num_quad_results;
         complex_t quadratic[3];
         complex_t quadratic_results[2];
         quadratic[0] = e;

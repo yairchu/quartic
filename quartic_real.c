@@ -62,7 +62,7 @@ static double stableness_score(double a, double b) {
 static int solve_normalized_poly(int degree, const double* poly, double* results) {
     const double shift = -poly[degree - 1] / (double) degree;
     double shifted_coefs[MAX_DEGREE + 1];
-	int i, num_results;
+    int i, num_results;
     calc_shifted_coefs(shift, degree, poly, shifted_coefs);
     num_results = solve_depressed_poly(degree, shifted_coefs, results);
     for (i = 0; i < num_results; ++i)
@@ -138,13 +138,13 @@ static int solve_depressed_quartic(const double* poly, double* results) {
     double helper_cubic[4];
     double helper_results[3];
     double quadratic_factor[3];
-	double p;
+    double p;
     const double e = poly[0];
     const double d = poly[1];
     const double c = poly[2];
-	int num_results;
+    int num_results;
     if (d == 0) {
-		int i, num_quad_results;
+        int i, num_quad_results;
         double quadratic[3];
         double quadratic_results[2];
         quadratic[0] = e;
@@ -181,7 +181,7 @@ static int solve_depressed_quartic(const double* poly, double* results) {
 static int solve_depressed_cubic(const double* poly, double* results) {
     const double q = poly[0];
     const double p = poly[1];
-	double t, s_real, s_abs, s_phase, u_abs, u_phase, u_real;
+    double t, s_real, s_abs, s_phase, u_abs, u_phase, u_real;
     if (p == 0.0) {
         results[0] = cubic_root(-q);
         return 1;
