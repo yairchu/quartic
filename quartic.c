@@ -145,7 +145,8 @@ static int solve_depressed_poly(int degree, const complex_t* poly, complex_t* re
 }
 
 /* Based on http://en.wikipedia.org/wiki/Quartic_function#Quick_and_memorable_solution_from_first_principles */
-static int solve_depressed_quartic(const complex_t* poly, complex_t* results) {
+static int solve_depressed_quartic(const complex_t* poly, complex_t* results)
+{
     complex_t helper_cubic[4];
     complex_t helper_results[3];
     complex_t quadratic_factor[3];
@@ -153,8 +154,11 @@ static int solve_depressed_quartic(const complex_t* poly, complex_t* results) {
     const complex_t e = poly[0];
     const complex_t d = poly[1];
     const complex_t c = poly[2];
-    int num_results;
-    if (complex_eq(d, complex_from_real(0.0))) {
+    double helper_norm, t;
+    int num_helper_results, num_results, best_helper_result, i;
+
+    if (complex_eq(d, complex_from_real(0.0)))
+    {
         int i, num_quad_results;
         complex_t quadratic[3];
         complex_t quadratic_results[2];
@@ -162,20 +166,38 @@ static int solve_depressed_quartic(const complex_t* poly, complex_t* results) {
         quadratic[1] = c;
         quadratic[2] = complex_from_real(1.0);
         num_quad_results = solve_poly(2, quadratic, quadratic_results);
-        for (i = 0; i < num_quad_results; ++i) {
+        for (i = 0; i < num_quad_results; ++i)
+        {
             const complex_t s = complex_sqrt(quadratic_results[i]);
             results[2*i] = complex_negate(s);
             results[2*i + 1] = s;
         }
         return 2 * num_quad_results;
     }
+
     helper_cubic[0] = complex_negate(complex_mult(d, d));
     helper_cubic[1] = complex_add(complex_mult(c, c), complex_mult_real(-4.0, e));
     helper_cubic[2] = complex_mult_real(2.0, c);
     helper_cubic[3] = complex_from_real(1.0);
-    if (solve_poly(3, helper_cubic, helper_results) < 1)
+    num_helper_results = solve_poly(3, helper_cubic, helper_results);
+    if (num_helper_results < 1)
         return 0;
-    p = complex_sqrt(helper_results[0]);
+
+    // Pick the result of helper_cubic which has the highest norm,
+    // For more stable calculation. Fixes https://github.com/yairchu/quartic/issues/2
+    best_helper_result = 0;
+    helper_norm = complex_sqr_norm(helper_results[0]);
+    for (i = 1; i < num_helper_results; ++i)
+    {
+        t = complex_sqr_norm(helper_results[i]);
+        if (t > helper_norm)
+        {
+            helper_norm = t;
+            best_helper_result = i;
+        }
+    }
+
+    p = complex_sqrt(helper_results[best_helper_result]);
     c_plus_p_sqr = complex_add(c, complex_mult(p, p));
     d_div_p = complex_div(d, p);
     quadratic_factor[0] = complex_add(c_plus_p_sqr, complex_negate(d_div_p));
