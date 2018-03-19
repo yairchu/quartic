@@ -21,7 +21,7 @@ complex_t parse_complex(char* str)
 
 int main(int argc, char** argv)
 {
-    if (argc != 6)
+    if (argc < 2 || argc > 6)
     {
         printf(
             "To solve: a*x^4 + b*x^3 + c*x^2 + d*x + e\n"
@@ -29,14 +29,12 @@ int main(int argc, char** argv)
             "\n");
         return -1;
     }
+    int degree = argc - 2;
     complex_t poly[5];
-    poly[4] = parse_complex(argv[1]);
-    poly[3] = parse_complex(argv[2]);
-    poly[2] = parse_complex(argv[3]);
-    poly[1] = parse_complex(argv[4]);
-    poly[0] = parse_complex(argv[5]);
+    for (int i = 0; i <= degree; ++i)
+        poly[degree - i] = parse_complex(argv[1+i]);
     complex_t sols[4];
-    const int num_sols = solve_poly(4, poly, sols);
+    const int num_sols = solve_poly(degree, poly, sols);
     int i;
     for (i = 0; i < num_sols; ++i)
         printf("%f + %fi\n", sols[i].real, sols[i].imag);
