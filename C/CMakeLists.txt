@@ -9,9 +9,9 @@ else()
   endif()
 endif()
 
-add_subdirectory("../rapidcheck" build)
+add_subdirectory(rapidcheck)
 
-add_executable(quartic_tests_cpp
+add_executable(quartic_tests
   quartic.c
   quartic_tests.cpp)
-target_link_libraries(quartic_tests_cpp rapidcheck)
+target_link_libraries(quartic_tests rapidcheck)

@@ -1,0 +1,3 @@
+[submodule "C/rapidcheck"]
+	path = C/rapidcheck
+	url = https://github.com/emil-e/rapidcheck.git

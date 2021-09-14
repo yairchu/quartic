@@ -9,6 +9,20 @@
 using std::complex;
 using std::vector;
 
+// Missing support for std::complex in rapidcheck
+// (https://github.com/emil-e/rapidcheck/issues/11)
+template <typename T>
+struct rc::Arbitrary<complex<T>> {
+  static Gen<complex<T>> arbitrary() {
+    return gen::map(
+      gen::pair(
+        Arbitrary<T>::arbitrary(),
+        Arbitrary<T>::arbitrary()),
+      [](std::pair<T, T> pair) { return complex<T> (pair.first, pair.second); }
+      );
+  }
+};
+
 template<typename T>
 T evaluatePoly(const vector<T>& poly, T x)
 {
@@ -59,34 +73,32 @@ void checks(const vector<complex<double>>& vals)
 {
     checkPoly(vals);
 
+    const vector<complex<double>> poly = polyFromRoots(vals);
+    const int degree = poly.size()-1;
+    complex<double> roots[degree];
+    const int numRoots = solve_poly(degree, (const complex_t*) poly.data(), (complex_t*) roots);
+    for (int iR = 0; iR < numRoots; ++iR)
     {
-        const vector<complex<double>> poly = polyFromRoots(vals);
-        const int degree = poly.size()-1;
-        complex<double> roots[degree];
-        const int numRoots = solve_poly(degree, (const complex_t*) poly.data(), (complex_t*) roots);
-        for (int iR = 0; iR < numRoots; ++iR)
-        {
-            const complex<double> root = roots[iR];
-            bool found = false;
-            for (const auto& v : vals)
-                if (v == root)
-                {
-                    found = true;
-                    break;
-                }
-            RC_ASSERT(found);
-        }
+        const complex<double> root = roots[iR];
+        bool found = false;
         for (const auto& v : vals)
-        {
-            bool found = false;
-            for (int iR = 0; iR < numRoots; ++iR)
-                if (v == roots[iR])
-                {
-                    found = true;
-                    break;
-                }
-            RC_ASSERT(found);
-        }
+            if (v == root)
+            {
+                found = true;
+                break;
+            }
+        RC_ASSERT(found);
+    }
+    for (const auto& v : vals)
+    {
+        bool found = false;
+        for (int iR = 0; iR < numRoots; ++iR)
+            if (v == roots[iR])
+            {
+                found = true;
+                break;
+            }
+        RC_ASSERT(found);
     }
 }
 
