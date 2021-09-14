@@ -15,3 +15,11 @@ add_executable(quartic_tests
   quartic.c
   quartic_tests.cpp)
 target_link_libraries(quartic_tests rapidcheck)
+
+add_executable(quartic
+  quartic.c
+  quartic_main.c)
+
+add_executable(quartic_real
+  quartic_real.c
+  quartic_real_main.c)

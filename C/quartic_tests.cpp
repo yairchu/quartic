@@ -42,8 +42,8 @@ void checkPoly(const vector<complex<double>>& poly)
     const int numResults = solve_poly(degree, (const complex_t*) poly.data(), (complex_t*) results);
     if (numResults == 0)
     {
-        for (const auto& c : poly)
-            RC_ASSERT(c == 0.0);
+        for (int i = 1; i < poly.size(); ++i)
+            RC_ASSERT(poly[i] == 0.0);
         return;
     }
     for (int i = 0; i < numResults; ++i)
@@ -71,18 +71,25 @@ vector<T> polyFromRoots(vector<T> roots)
 
 void checks(const vector<complex<double>>& vals)
 {
+    // Avoid too large values due to accuracy issues
+    for (const auto& x : vals)
+        if (std::norm(x) > 1e20)
+            return;
+
     checkPoly(vals);
 
     const vector<complex<double>> poly = polyFromRoots(vals);
     const int degree = poly.size()-1;
     complex<double> roots[degree];
     const int numRoots = solve_poly(degree, (const complex_t*) poly.data(), (complex_t*) roots);
+    RC_ASSERT(numRoots >= 0);
+    const double epsilon = 1e-5;
     for (int iR = 0; iR < numRoots; ++iR)
     {
         const complex<double> root = roots[iR];
         bool found = false;
         for (const auto& v : vals)
-            if (v == root)
+            if (std::norm(v - root) < epsilon)
             {
                 found = true;
                 break;
@@ -91,9 +98,11 @@ void checks(const vector<complex<double>>& vals)
     }
     for (const auto& v : vals)
     {
+        if (v == 0.0)
+            continue;
         bool found = false;
         for (int iR = 0; iR < numRoots; ++iR)
-            if (v == roots[iR])
+            if (std::norm(v - roots[iR]) < epsilon)
             {
                 found = true;
                 break;
@@ -129,9 +138,9 @@ int main()
 {
     typedef complex<double> C;
     rc::check("Real quadratic", propsRealQuadratic);
-    rc::check("Degree=1", [](C a, C b) { checks( {a, b} ); });
-    rc::check("Degree=2", [](C a, C b, C c) { checks( {a, b, c} ); });
-    rc::check("Degree=3", [](C a, C b, C c, C d) { checks( {a, b, c, d} ); });
-    rc::check("Degree=4", [](C a, C b, C c, C d, C e) { checks( {a, b, c, d, e} ); });
+    rc::check("Degree=1", [](C a) { checks( {a} ); });
+    rc::check("Degree=2", [](C a, C b) { checks( {a, b} ); });
+    rc::check("Degree=3", [](C a, C b, C c) { checks( {a, b, c} ); });
+    rc::check("Degree=4", [](C a, C b, C c, C d) { checks( {a, b, c, d} ); });
     return 0;
 }
