@@ -88,7 +88,7 @@ def sqrts(x):
 def solveDepressedCubic(q, p):
     thirdRootUnity = math.e**(math.pi/3j)
     if p == 0:
-        r = -q ** 1/3.
+        r = -q ** (1/3.)
     else:
         u = solvePoly([-p*p*p/27, q, 1])[0]**(1/3.)
         r = u - p/3/u
