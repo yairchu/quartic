@@ -101,10 +101,12 @@ def sqrts(x):
 
 # Based on http://en.wikipedia.org/wiki/Cubic_equation#Cardano.27s_method
 def solve_depressed_cubic(q, p):
-    third_root_unity = math.e ** (math.pi / 3j)
+    third_root_unity = math.e ** (math.pi * 2j / 3)
     if p == 0:
         r = -(q ** (1 / 3.0))
+        return [r, r * third_root_unity, r * third_root_unity**2]
     else:
         u = solve_poly([-p * p * p / 27, q, 1])[0] ** (1 / 3.0)
-        r = u - p / 3 / u
-    return [r, r * third_root_unity, r * third_root_unity**2]
+        return [
+            v - p / 3 / v for v in [u, u * third_root_unity, u * third_root_unity**2]
+        ]
