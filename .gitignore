@@ -1,5 +1,9 @@
 /tags
+/Haskell/.stack-work/
 /Haskell/quartic_tests
+/Haskell/stack.yaml
+/Haskell/stack.yaml.lock
+*.cabal
 /C/quartic
 /C/quartic_real
 /C/quartic_tests

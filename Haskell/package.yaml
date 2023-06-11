@@ -1,0 +1,22 @@
+name: Quartic
+version: 0.1.0
+synopsis: "Solve Quartic equations (4th degree polynomials)"
+github: "yairchu/quartic"
+license: BSD
+author: "Yair Chuchem"
+maintainer:
+- yairchu@gmail.com
+
+dependencies:
+- base >= 4.12
+
+library:
+  source-dirs: .
+  exposed-modules: Quartic
+
+tests:
+  Tests:
+    main: quartic_tests.hs
+    source-dirs: .
+    dependencies:
+    - QuickCheck
