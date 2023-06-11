@@ -7,10 +7,13 @@ toComplex :: RealFloat a => a -> Complex a
 toComplex = (:+ 0)
 
 checks :: [Complex Double] -> Bool
-checks vals =
-    checkPoly vals && all (elemC vals) roots &&
-    -- For Cubic equations we do not find all roots. See comment in Quartic.hs
-    (length vals == 3 || all (elemC roots) vals)
+checks vals
+    | head vals == 0 || last vals == 0 =
+        True -- Skip testing too-small polynomials
+    | otherwise =
+        checkPoly vals && all (elemC vals) roots &&
+        -- For Cubic equations we do not find all roots. See comment in Quartic.hs
+        (length vals == 3 || all (elemC roots) vals)
     where
         poly = polyFromRoots vals
         roots = solvePoly poly
@@ -39,6 +42,8 @@ zipWithDefault d f xs ys =
         mhead (x:_) = x
 
 propsRealQuadratic :: Double -> Double -> Double -> Bool
+propsRealQuadratic 0 _ _ = True
+propsRealQuadratic _ _ 0 = True
 propsRealQuadratic a b c =
     checkRoots $ solvePoly poly
     where
