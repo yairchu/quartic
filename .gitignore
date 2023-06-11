@@ -12,6 +12,8 @@
 /C/MakeFile
 /C/build
 /C/cmake_install.cmake
+/Python/.hypothesis/
+/Python/__pycache__/
 *.o
 *.hi
 .vscode
