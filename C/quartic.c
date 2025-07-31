@@ -4,7 +4,9 @@
 
 #include "quartic.h"
 
+#ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
+#endif
 #include <math.h>
 
 #define MAX_DEGREE 4
